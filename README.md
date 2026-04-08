@@ -99,4 +99,4 @@
 1. 저장소의 `kobert_for_class.ipynb` 파일을 Google Colab에서 엽니다.
 2. 필수 라이브러리(`gluonnlp`, `mxnet`, `transformers` 등)를 설치합니다.
 3. `label_mapping` 변수에 정의된 27개 감정 라벨이 데이터셋과 일치하는지 확인합니다.
-4. 학습 루프를 실행하여 모델을 생성하고 성능을 검증합니다,
+4. 학습 루프를 실행하여 모델을 생성하고 성능을 검증합니다.
