@@ -24,7 +24,7 @@
 * **전처리 과정**: 의미 분별이 분명하도록 띄어쓰기, 복합어, 숫자 및 외국어 처리를 수행하고, KoBERTTokenizer를 통해 형태소 단위로 토크나이징 하였습니다.
 
 ### **2.2 실험 설계 및 모델링**
-* **모델 구조**: KoBERT 모델의 인코더 출력층 위에 768개의 은닉층과 드롭아웃 레이어를 추가한 커스텀 `BERTClassifier`를 설계하였습니다.
+* **모델 구조**: SKT Brain에서 공개한 [KoBERT](https://github.com/SKTBrain/KoBERT)를 기반으로, 한국어 특유의 언어 변화 특성을 반영한 사전 학습 모델을 활용하였습니다.
 * **하이퍼파라미터**: Batch size 16, Epochs 5(사전학습)/3(성능검증), Learning rate $5 \times 10^{-5}$를 설정하였습니다.
 * **학습 스케줄러**: 학습 안정성을 위해 `get_cosine_schedule_with_warmup`을 적용하여 가중치 업데이트를 조절하였습니다.
 
@@ -59,3 +59,43 @@
 ## **6. 향후 연구 발전 방향**
 * **모델 다양화**: KOBERT 외 다양한 한국어 특화 BERT 파생 모델과의 성능 비교 연구가 필요합니다.
 * **멀티모달 확장**: 텍스트를 넘어 음성, 표정, 제스처 등 비언어적 요소를 결합한 감정 인식 모델로의 발전을 도모할 예정입니다.
+
+---
+
+## **7. 실험 재현 가이드 (Reproducibility)**
+
+본 연구의 결과를 재현하기 위한 하드웨어 환경 및 소프트웨어 설정은 다음과 같습니다.
+
+### **7.1 하드웨어 및 소프트웨어 환경**
+* **OS**: Windows 11 Pro 또는 macOS Sonoma 
+* **GPU**: Google Colab T4 GPU 환경
+* **Language**: Python
+* **핵심 라이브러리**: 
+  * `torch`, `transformers` (v4.x 이상 권장)
+  * `gluonnlp`, `mxnet` (KoBERT 데이터 처리를 위해 필수)
+  * `pandas`, `numpy`, `tqdm`
+
+### **7.2 토크나이저 및 데이터 처리 설정**
+* **Tokenizer**: SKT Brain에서 제공하는 `KoBERTTokenizer`를 활용하였습니다 (`skt/kobert-base-v1`)
+* **Dataset Class**: `BERTDataset` 클래스를 정의하여 토큰화, 패딩 및 어텐션 마스크 생성을 수행하였습니다.
+* **입력 제한**:
+  * `max_len`: 512 (긴 문장 처리를 위해 최대 길이로 설정)
+  * `truncation`: True (최대 길이를 초과하는 문장은 절단)
+
+### **7.3 하이퍼파라미터 (Hyper-parameters)**
+실험에 사용된 최적의 하이퍼파라미터 설정값은 다음과 같습니다.
+
+| 항목 | 설정값 | 
+| :--- | :--- |
+| **Batch Size** | 16 | 
+| **Epochs** | 5 (Pre-training) / 3 (Validation) | 
+| **Learning Rate** | $5 \times 10^{-5}$ | 
+| **Warmup Ratio** | 0.1 |
+| **Optimizer** | AdamW |
+| **Loss Function** | CrossEntropyLoss |
+
+### **7.4 실행 방법**
+1. 저장소의 `kobert_for_class.ipynb` 파일을 Google Colab에서 엽니다.
+2. 필수 라이브러리(`gluonnlp`, `mxnet`, `transformers` 등)를 설치합니다.
+3. `label_mapping` 변수에 정의된 27개 감정 라벨이 데이터셋과 일치하는지 확인합니다.
+4. 학습 루프를 실행하여 모델을 생성하고 성능을 검증합니다,
