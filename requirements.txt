@@ -1,0 +1,7 @@
+torch
+transformers
+gluonnlp
+mxnet
+pandas
+numpy
+tqdm
